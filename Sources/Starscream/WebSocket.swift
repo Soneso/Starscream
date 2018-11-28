@@ -363,7 +363,6 @@ open class WebSocket : NSObject, StreamDelegate, WebSocketClient, WSStreamDelega
     let headerWSVersionValue    = "13"
     let headerWSExtensionName   = "Sec-WebSocket-Extensions"
     let headerWSKeyName         = "Sec-WebSocket-Key"
-    let headerOriginName        = "Origin"
     let headerWSAcceptName      = "Sec-WebSocket-Accept"
     let BUFFER_MAX              = 4096
     let FinMask: UInt8          = 0x80
@@ -466,15 +465,6 @@ open class WebSocket : NSObject, StreamDelegate, WebSocketClient, WSStreamDelega
     public init(request: URLRequest, protocols: [String]? = nil, stream: WSStream = FoundationStream()) {
         self.request = request
         self.stream = stream
-        if request.value(forHTTPHeaderField: headerOriginName) == nil {
-            guard let url = request.url else {return}
-            var origin = url.absoluteString
-            if let hostUrl = URL (string: "/", relativeTo: url) {
-                origin = hostUrl.absoluteString
-                origin.remove(at: origin.index(before: origin.endIndex))
-            }
-            self.request.setValue(origin, forHTTPHeaderField: headerOriginName)
-        }
         if let protocols = protocols, !protocols.isEmpty {
             self.request.setValue(protocols.joined(separator: ","), forHTTPHeaderField: headerWSProtocolName)
         }
